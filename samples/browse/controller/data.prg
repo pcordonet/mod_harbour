@@ -18,9 +18,10 @@ RETU NIL
 	
 STATIC FUNCTION Load()	
 	
-	LOCAL nPage 	:= val( TGet( 'page', 1 ) )
-	LOCAL nRows 	:= val( TGet( 'rows', 5 ) )
-	LOCAL cType 	:= 'HTML'	//	JSON
+	LOCAL nPage 	:= val( TGet( 'page', '1' ) )
+	LOCAL nRows 	:= val( TGet( 'rows', '5' ) )
+	LOCAL cType 	:= TGet( 'output', 'HTML' ) 	//	JSON
+	//LOCAL cType 	:= 'HTML'
 	LOCAL aRows 	:= {}
 	LOCAL cHtml 	:= ''
 	LOCAL cRecno 	:= ''
@@ -67,13 +68,16 @@ STATIC FUNCTION Load()
 			
 			? cHtml
 			
-		CASE cType == 'JSON'		
+		CASE cType == 'JSON'	
 
-			hRequest[ 'rows'] := aRows
+			//	Para usarlo desde llamadas tipo ws
+			//	Check -> http://localhost/browse/controller/data.prg?action=load&output=JSON&rows=100 
+
+			hRequest[ 'rows'    ] := aRows
 			hRequest[ 'reccount'] := oCustomer:RecCount()		
 			
 			//	Pendiente de crear cabecera type json
-			//? hb_jsonEncode( hRequest )
+			? hb_jsonEncode( hRequest )
 			
 	ENDCASE
 	   

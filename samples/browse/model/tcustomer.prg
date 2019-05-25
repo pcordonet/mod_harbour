@@ -32,8 +32,8 @@ METHOD GetPage( nPage, nRows ) CLASS TCustomer
 	LOCAL aReg   	:= {}
 	LOCAL aRows  	:= {}
 
-	hb_default( @nPage, 1 )
-	hb_default( @nRows, 5 )
+	zb_default( @nPage, 1 )
+	zb_default( @nRows, 5 )
 	
 	nRecno	:= Max( ((  nPage - 1 ) * nRows ) + 1 , 1 )
 	
@@ -86,5 +86,4 @@ METHOD Delete( n ) CLASS TCustomer
 	ENDIF
 
 RETU NIL
-
 

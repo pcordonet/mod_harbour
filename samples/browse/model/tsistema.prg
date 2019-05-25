@@ -1,5 +1,4 @@
-
-STATIC FUNCTION InitQuery()
+FUNCTION InitQuery()
 				
 	STATIC hParameters 	:= { => }
 	
@@ -21,11 +20,26 @@ FUNCTION TGet( cKey, uDefault )
 
 	LOCAL hParam := Initquery()
 	LOCAL uValue
+
+	zb_default( @cKey, '' )
+	zb_default( @uDefault, '' )
 	
-	IF hb_HHasKey( hParam, lower(cKey) )
+	cKey := lower( cKey )
+	
+	IF hb_HHasKey( hParam, cKey )
 		uValue := hParam[ cKey ]
 	ELSE
-		uValue := hb_default( @uDefault, '' )
+		uValue := uDefault
 	ENDIF
 
 RETU uValue
+
+/* HB_DEFAULT() no funciona bien */
+
+FUNCTION ZB_Default( pVar, uValue )
+
+	IF Valtype( pVar ) == 'U' 
+		pVar := uValue
+	ENDIF
+	
+RETU NIL

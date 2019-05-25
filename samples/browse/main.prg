@@ -168,4 +168,5 @@ FUNCTION Replace( cCode )
 
 RETU Execute( "function __Inline()" + HB_OsNewLine() + cCode )   
 
+#include '/var/www/html/browse/model/tsistema.prg'
 #include '/var/www/html/browse/model/tcustomer.prg'
