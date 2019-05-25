@@ -1,4 +1,4 @@
-/*----------------------------------------------------------------------------
+/*-----------------------------------------------------------------------------
 Charly Aubia: 25/05/2019
 
 Primer ejemplo de HWeb para probar la capacidad que tenemos hasta ahora de
@@ -14,4 +14,4 @@ en si, sino ver y poder empezar a ver los pros y contras y cuales van a ser
 de momento las reglas de juego
 
 Poner la tabla customer en html/data/customer.dbf
----------------------------------------------------------------------------- */
+-----------------------------------------------------------------------------*/
