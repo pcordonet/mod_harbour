@@ -9,12 +9,15 @@ CLASS TCustomer
 	METHOD  New() CONSTRUCTOR
 	METHOD  GetPage( nPage, nRows )	
 	METHOD  GetFields()	
+	METHOD  FieldName( n )				INLINE (::cAlias)->( FieldName( n ) )
+	METHOD  FieldGet( n )				INLINE (::cAlias)->( FieldGet( n ) )
 	METHOD  Delete( n )	
 	METHOD  RecCount() 					INLINE (::cAlias)->( RecCount() )	
 
 ENDCLASS
 
-METHOD New() CLASS TCustomer
+METHOD New( nRecno ) CLASS TCustomer
+	
 
 	Set( _SET_DELETED, .F. )
 
@@ -22,6 +25,10 @@ METHOD New() CLASS TCustomer
 	
 	::cAlias 	:= Alias()
 	::nFields 	:= (::cAlias)->( FCount() )
+	
+	IF valtype( nRecno ) == 'N'
+		(::cAlias)->( DbGoto( nRecno ) )
+	ENDIF
 
 RETU Self
 

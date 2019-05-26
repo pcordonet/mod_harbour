@@ -10,8 +10,11 @@ function Controller()
 	DO CASE
 		CASE cAction == 'load' 		; Load()
 		CASE cAction == 'delete' 	; Del()
+		CASE cAction == 'edit' 		; Edit()
+		CASE cAction == 'update'	; Update()
 		OTHERWISE
-			? 'Metodo erroneo...'
+			? AP_METHOD()+ CRLF
+			? AP_Args()
 	ENDCASE
 	
 RETU NIL
@@ -53,7 +56,7 @@ STATIC FUNCTION Load()
 				NEXT
 				
 				cHtml += "<td>"
-				cHtml += '<button type="button" class="btn btn-xs btn-default">'
+				cHtml += '<button type="button" onClick="Edit(' + cRecno + ')" class="btn btn-xs btn-default">'
 				cHtml += '   <span class="glyphicon glyphicon-pencil" data-recno="' + cRecno + '"></span>'
 				cHtml += "</button>"
 				//cHtml += '<button type="button" data-bind="click: $parent.remove" class="remove-news btn btn-xs btn-default" data-toggle="tooltip" data-placement="top" data-original-title="Delete">'
@@ -89,6 +92,93 @@ STATIC FUNCTION Del()
 	LOCAL oCustomer := TCustomer():New()
 	
 	? hb_valtostr( oCustomer:Delete( nRecno ) )
+
+RETU NIL
+
+STATIC FUNCTION Edit()
+
+	//LOCAL nRecno 	:= val( TGet( 'recno', 0 ) )
+	LOCAL x := '123'
+	
+TEMPLATE
+	<div class="modal-body">
+
+		<table class="table table-striped table-bordered" style="margin:0px;">
+			<thead>
+				<tr>
+					<th>FieldName</th>
+					<th>Value</th>
+			</thead>
+			<tbody id='myfields' data-recno="<?prg return TGet( 'recno' )?>">
+            <?prg 
+				LOCAL nRecno 	:= val( TGet( 'recno' ) )
+				LOCAL oCustomer := TCustomer():New( nRecno )	 
+				LOCAL cRows 	:= "", n
+				LOCAL cField 	:= ''				
+				
+                FOR n := 1 TO oCustomer:nFields
+						cField := oCustomer:FieldName( n )
+						cRows += '<tr>'
+						cRows += '   <td class="center">' + cField + "</td>"
+						cRows += '   <td  class="center"><input type="text" data-field="' + cField + '" class="form-control" style="border-radius:0px"' + ;
+                                   " value='" + ValToChar( oCustomer:FieldGet( n ) ) + "'></td>"
+						cRows += '</tr>'
+                NEXT
+				
+                RETURN cRows
+			?>
+			</tbody> 
+		</table>
+
+	</div>
+
+
+	<div class="modal-footer">
+	  <button data-dismiss="modal" class="btn btn-danger" onClick="Test_Update()">Salvar Datos</button>
+	</div>
+	
+	<script>
+	
+		function Test_Update() {
+		
+			var nRecno 	= $("#myfields").attr( 'data-recno' )
+			var aFields = $("#myfields :input");
+			var nFields = aFields.length
+			var oParam	= new Object()
+			var oData	= new Object()
+						
+			oParam[ 'action' ] = 'update'
+			oParam[ 'recno' ] = nRecno
+			
+			for (i = 0; i < nFields; i++) {
+				oData[ $(aFields[i]).attr('data-field') ] = aFields[i].value 
+			}
+			
+			oParam[ 'data' ] = oData			
+			
+			console.log( 'oParam', oParam )
+			alert( 'Este proceso pendiente del POST. Asi podremos chequear. Check consola' )
+			
+			/*
+			$.post( "controller/data.prg", oParam )
+					.done(function( data ) {
+					alert( "Data Loaded: " + data );
+				});
+			*/		
+		}
+	</script>	
+	
+ENDTEXT
+
+
+RETU NIL
+
+
+FUNCTION Update()
+
+ LOCAL cArgs 		:= AP_Args()
+
+? cArgs
 
 RETU NIL
 

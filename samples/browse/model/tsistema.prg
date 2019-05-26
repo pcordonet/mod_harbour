@@ -1,3 +1,20 @@
+#define CRLF '<br>'
+
+FUNCTION Template( cText )
+
+   local nStart, nEnd, cCode
+
+   while ( nStart := At( "<?prg", cText ) ) != 0
+      nEnd = At( "?>", SubStr( cText, nStart + 5 ) )
+      cCode = SubStr( cText, nStart + 5, nEnd - 1 )
+      cText = SubStr( cText, 1, nStart - 1 ) + Replace( cCode ) + SubStr( cText, nStart + nEnd + 6 )
+   end 
+   
+RETU cText
+
+FUNCTION Replace( cCode )
+RETU Execute( "function __Inline()" + HB_OsNewLine() + cCode ) 
+
 FUNCTION InitQuery()
 				
 	STATIC hParameters 	:= { => }

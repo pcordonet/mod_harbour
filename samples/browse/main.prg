@@ -42,7 +42,7 @@ TEMPLATE
 						</h2>
 					</div>
 					<div class="col-sm-7" style="margin-top:15px;">
-						<a href="#" class="btn btn-primary"><i class="material-icons">&#xE147;</i> <span>Añadir Regsitro</span></a>						
+						<a href="#" class="btn btn-primary" ><i class="material-icons">&#xE147;</i> <span>Añadir Regsitro</span></a>						
 						<a href="#" class="btn btn-primary" onClick="Info()"><i class="material-icons">&#xE24D;</i> <span>Informacion</span></a>
 					</div>
                 </div>
@@ -88,6 +88,15 @@ TEMPLATE
 		</div>
 	  </div>
 	</div>
+	
+	<!-- Modal HTML -->
+	<div class="modal fade" id="dlg_edit" role="dialog">
+	  <div class="modal-dialog">
+		<div id="dlg_edit_content" class="modal-content">
+
+		</div>
+	  </div>
+	</div>	
 	
 	
     <script>
@@ -142,7 +151,13 @@ TEMPLATE
 					
 				});	
 			}
-		}		
+		}
+
+		function Edit( n ) { 
+
+			$('#dlg_edit').modal('show');
+			$("#dlg_edit_content").load( "controller/data.prg?action=edit&recno=" + n )		
+		}
 		
     </script>
 	
@@ -152,21 +167,7 @@ ENDTEXT
 
 RETU NIL
 
-FUNCTION Template( cText )
-
-   local nStart, nEnd, cCode
-
-   while ( nStart := At( "<?prg", cText ) ) != 0
-      nEnd = At( "?>", SubStr( cText, nStart + 5 ) )
-      cCode = SubStr( cText, nStart + 5, nEnd - 1 )
-      cText = SubStr( cText, 1, nStart - 1 ) + Replace( cCode ) + SubStr( cText, nStart + nEnd + 6 )
-   end 
-   
-RETU cText
-
-FUNCTION Replace( cCode )
-
-RETU Execute( "function __Inline()" + HB_OsNewLine() + cCode )   
+  
 
 #include '/var/www/html/browse/model/tsistema.prg'
 #include '/var/www/html/browse/model/tcustomer.prg'
