@@ -15,6 +15,7 @@ CLASS TCustomer
 	METHOD  Delete( n )	
 	METHOD  RecCount() 					INLINE (::cAlias)->( RecCount() )	
 	METHOD  Info() 						
+	METHOD  Update( nRecno, aData ) 						
 
 ENDCLASS
 
@@ -107,3 +108,34 @@ METHOD Info() CLASS TCustomer
 
 
 RETU aInfo
+
+METHOD Update( n, aData ) CLASS TCustomer
+
+	LOCAL nI, nLen, cField, uValue, nPos
+	LOCAL lUpdate := .F.
+
+	(::cAlias)->( DbGoTo( n ) )
+	
+	IF ( (::cAlias)->( Rlock() ) )
+	
+		nLen := Len( aData )
+		
+		FOR nI := 1 TO nLen
+			
+			cField := aData[nI,1]
+			uValue := aData[nI,2]
+			
+		
+			
+			nPos := (::cAlias)->( FieldPos( cField ) )
+			(::cAlias)->( FieldPut( nPos, uValue ) )
+			
+		NEXT
+		
+		(::cAlias)->( DbUnlock() )
+		
+		lUpdate := .T.
+
+	ENDIF
+
+RETU lUpdate

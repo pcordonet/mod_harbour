@@ -11,7 +11,6 @@ function Controller()
 		CASE cAction == 'load' 		; Load()
 		CASE cAction == 'delete' 	; Del()
 		CASE cAction == 'edit' 		; Edit()
-		CASE cAction == 'update'	; Update()
 		OTHERWISE
 			? AP_METHOD()+ CRLF
 			? AP_Args()
@@ -150,21 +149,40 @@ TEMPLATE
 			oParam[ 'action' ] = 'update'
 			oParam[ 'recno' ] = nRecno
 			
-			for (i = 0; i < nFields; i++) {
-				oData[ $(aFields[i]).attr('data-field') ] = aFields[i].value 
-			}
 			
-			oParam[ 'data' ] = oData			
-			
-			console.log( 'oParam', oParam )
-			alert( 'Este proceso pendiente del POST. Asi podremos chequear. Check consola' )
-			
+			//	Esto de momento no funciona cuando llega al server...
 			/*
-			$.post( "controller/data.prg", oParam )
+				for (i = 0; i < nFields; i++) {
+					oData[ $(aFields[i]).attr('data-field') ] = aFields[i].value 
+				}
+				
+				//	Lo suyo seria pasar este objeto via post pero de momento casca 
+				
+					oParam[ 'data' ] = oData			
+				
+					
+			*/
+			
+			//	Lo pondremos en el mismo array para recuperar bien el POST
+			
+				for (i = 0; i < nFields; i++) {
+					oParam[ $(aFields[i]).attr('data-field') ] = aFields[i].value 
+				}			
+			
+			
+				console.log( 'oParam', oParam )
+			
+			
+			$.post( "controller/data_update.prg", oParam )
 					.done(function( data ) {
-					alert( "Data Loaded: " + data );
-				});
-			*/		
+						alert( "Data Loaded: " + data );
+						
+						//	Pendiente de Refrescar Pagina...
+						LoadPage( nActual )
+					});
+				
+				
+					
 		}
 	</script>	
 	
@@ -174,13 +192,6 @@ ENDTEXT
 RETU NIL
 
 
-FUNCTION Update()
-
- LOCAL cArgs 		:= AP_Args()
-
-? cArgs
-
-RETU NIL
 
 #include '/var/www/html/browse/model/tsistema.prg'
 #include '/var/www/html/browse/model/tcustomer.prg'

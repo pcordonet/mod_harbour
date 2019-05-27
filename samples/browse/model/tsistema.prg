@@ -51,6 +51,36 @@ FUNCTION TGet( cKey, uDefault )
 
 RETU uValue
 
+FUNCTION TPost( cKey, uDefault )
+
+	STATIC hPost 
+	
+	LOCAL uValue
+    LOCAL n	   
+   
+    IF ( ValType( hPost ) <> 'H' )
+	
+		hPost := {=>}
+   
+		FOR n = 0 to AP_PostPairsCount() - 1
+			hPost[ lower(AP_PostPairsKey( n )) ] := AP_PostPairsVal( n )
+		NEXT
+	
+	ENDIF	
+
+	zb_default( @cKey, '' )
+	zb_default( @uDefault, '' )
+	
+	cKey := lower( cKey )
+	
+	IF hb_HHasKey( hPost, cKey )
+		uValue := hPost[ cKey ]
+	ELSE
+		uValue := uDefault
+	ENDIF
+
+RETU uValue
+
 /* HB_DEFAULT() no funciona bien */
 
 FUNCTION ZB_Default( pVar, uValue )
