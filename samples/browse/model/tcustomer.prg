@@ -2,7 +2,8 @@
 
 CLASS TCustomer
 
-	DATA cDescription INIT 'Customer (Harbour)'
+	DATA cDescription 	INIT 'Customer (Harbour)'
+	DATA cFile 			INIT '/var/www/html/data/customer.dbf'
 	DATA cAlias
 	DATA nFields
 
@@ -13,6 +14,7 @@ CLASS TCustomer
 	METHOD  FieldGet( n )				INLINE (::cAlias)->( FieldGet( n ) )
 	METHOD  Delete( n )	
 	METHOD  RecCount() 					INLINE (::cAlias)->( RecCount() )	
+	METHOD  Info() 						
 
 ENDCLASS
 
@@ -21,7 +23,7 @@ METHOD New( nRecno ) CLASS TCustomer
 
 	Set( _SET_DELETED, .F. )
 
-	USE ( '/var/www/html/data/customer.dbf' ) SHARED NEW
+	USE ( ::cFile ) SHARED NEW
 	
 	::cAlias 	:= Alias()
 	::nFields 	:= (::cAlias)->( FCount() )
@@ -94,3 +96,14 @@ METHOD Delete( n ) CLASS TCustomer
 
 RETU NIL
 
+METHOD Info() CLASS TCustomer
+
+	LOCAL aInfo := {=>}
+	LOCAL aFile := Directory( ::cFile )
+	
+	aInfo['file'] := ::cFile
+	aInfo['size'] := aFile[1][2]
+	aInfo['reccount'] := ::RecCount()
+
+
+RETU aInfo

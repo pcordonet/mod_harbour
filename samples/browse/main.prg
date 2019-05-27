@@ -76,14 +76,7 @@ TEMPLATE
 	<!-- Modal HTML -->
 	<div class="modal fade" id="dlg_info" role="dialog">
 	  <div class="modal-dialog">
-		<div class="modal-content">
-			<div class="modal-body">
-				No me ha dado tiempo...
-			</div>
-
-			<div class="modal-footer">
-			  <button data-dismiss="modal" class="btn btn-danger">Aceptar</button>
-			</div>
+		<div id="dlg_info_content" class="modal-content">
 
 		</div>
 	  </div>
@@ -131,7 +124,7 @@ TEMPLATE
 		
 		function LoadPage( nPage ) {
 		
-			$("#dat").html("LOADING...")
+			$("#dat").html( '<b>Cargando...</b>' )
 			$("#dat").load("controller/data.prg?action=load&page=" + nPage + "&rows=" + nRows);	
 			nActual = nPage	
 		}
@@ -139,6 +132,7 @@ TEMPLATE
 		function Info() {
 
 			$('#dlg_info').modal('show');
+			$("#dlg_info_content").load( "controller/info.prg" ) 
 		}
 		
 		function Delete( n ) {
@@ -156,7 +150,7 @@ TEMPLATE
 		function Edit( n ) { 
 
 			$('#dlg_edit').modal('show');
-			$("#dlg_edit_content").load( "controller/data.prg?action=edit&recno=" + n )		
+			$("#dlg_edit_content").load( "controller/data.prg?action=edit&recno=" + n ) 		
 		}
 		
     </script>

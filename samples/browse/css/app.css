@@ -189,5 +189,11 @@
 		color: #ff5b5b;
 	}
 	
+	.loading {
+		margin-left: auto;
+		margin-right: auto;
+		display: block;
+	}
+	
 		
 </style>
