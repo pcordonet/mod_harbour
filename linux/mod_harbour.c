@@ -44,41 +44,108 @@
 #include <dlfcn.h>  
 
 static request_rec * _r;
+static apr_array_header_t * POST_pairs = NULL;
 
 int ap_headers_in_count( void )
 {
    return apr_table_elts( _r->headers_in )->nelts;
-}   
+}
 
-char * ap_headers_in_key( int iKey )
+int ap_headers_out_count( void )
+{
+   return apr_table_elts( _r->headers_out )->nelts;
+}
+
+int ap_post_pairs_count( void )
+{
+   if( POST_pairs != NULL )
+      return POST_pairs->nelts;
+   else
+      return 0;
+}
+
+const char * ap_headers_in_key( int iKey )
 {
    const apr_array_header_t * fields = apr_table_elts( _r->headers_in );
    apr_table_entry_t * e = ( apr_table_entry_t * ) fields->elts;
-   
+
    if( iKey >= 0 && iKey < fields->nelts )
       return e[ iKey ].key;
    else
       return "";
-}   
+}
 
-char * ap_headers_in_val( int iKey )
+const char * ap_headers_in_val( int iKey )
 {
    const apr_array_header_t * fields = apr_table_elts( _r->headers_in );
    apr_table_entry_t * e = ( apr_table_entry_t * ) fields->elts;
-   
+
    if( iKey >= 0 && iKey < fields->nelts )
       return e[ iKey ].val;
    else
       return "";
-}   
+}
+
+const char * ap_post_pairs_key( int iKey )
+{
+   ap_form_pair_t * e;
+
+   if( POST_pairs != NULL )
+   {
+      e = ( ap_form_pair_t * ) POST_pairs->elts;
+
+      if( iKey >= 0 && iKey < POST_pairs->nelts )
+         return e[ iKey ].name;
+      else
+         return "";
+   }
+   else
+      return "";
+}
+
+const char * ap_post_pairs_val( int iKey )
+{
+   ap_form_pair_t * e;
+
+   if( POST_pairs != NULL )
+   {
+      e = ( ap_form_pair_t * ) POST_pairs->elts;
+
+      if( iKey >= 0 && iKey < POST_pairs->nelts )
+      {
+         apr_off_t len;
+         apr_size_t size; 
+         char * buffer;
+
+         apr_brigade_length( e[ iKey ].value, 1, &len );
+         size = ( apr_size_t ) len;
+         buffer = apr_palloc( _r->pool, size + 1 );
+         apr_brigade_flatten( e[ iKey ].value, buffer, &size );
+         buffer[ len ] = 0;
+
+         return buffer;
+      }
+      else
+         return "";
+   }
+   else
+      return "";
+}
+
+void ap_headers_out_set( const char * szKey, const char * szValue )
+{
+   apr_table_set( _r->headers_out, szKey, szValue );
+}
 
 static int harbour_handler( request_rec * r )
 {
    void * lib_harbour = NULL;
    int ( * _hb_apache )( void * pRequestRec, void * pAPRPuts, 
                          const char * szFileName, const char * szArgs, const char * szMethod, const char * szUserIP,
-                         void * pHeadersIn, void * pHeadersOut, void * pHeadersInCount, void * pHeadersInKey,
-                         void * pHeadersInVal ) = NULL;
+                         void * pHeadersIn, void * pHeadersOut, 
+                         void * pHeadersInCount, void * pHeadersInKey, void * pHeadersInVal, 
+                         void * pPostPairsCount, void * pPostPairsKey, void * pPostPairsVal,
+                         void * pHeadersOutCount, void * pHeadersOutSet ) = NULL;
    int iResult = OK;
 
    if( strcmp( r->handler, "harbour" ) )
@@ -86,20 +153,24 @@ static int harbour_handler( request_rec * r )
 
    r->content_type = "text/html";
    _r = r;
-   
+
    lib_harbour = dlopen( "/var/www/html/libharbour.so.3.2.0", RTLD_LAZY );
 
    if( lib_harbour == NULL )
       ap_rputs( dlerror(), r );
    else
    {
+      ap_parse_form_data( r, NULL, &POST_pairs, -1, HUGE_STRING_LEN );
       _hb_apache = dlsym( lib_harbour, "hb_apache" );
 
       if( _hb_apache == NULL )
          ap_rputs( "failed to load hb_apache()", r );
       else
-         iResult = _hb_apache( r, ap_rputs, r->filename, r->args, r->method, r->useragent_ip, r->headers_in, r->headers_out,
-                               ap_headers_in_count, ap_headers_in_key, ap_headers_in_val );
+         iResult = _hb_apache( r, ap_rputs, r->filename, r->args, r->method, r->useragent_ip, 
+                               r->headers_in, r->headers_out,
+                               ap_headers_in_count, ap_headers_in_key, ap_headers_in_val,
+                               ap_post_pairs_count, ap_post_pairs_key, ap_post_pairs_val, 
+                               ap_headers_out_count, ap_headers_out_set );
    }
 
    if( lib_harbour != NULL )
