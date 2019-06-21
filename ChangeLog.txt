@@ -1,0 +1,50 @@
+2019/June/15
+
+* Fixed function AP_SetContentType() (please review samples/json.prg using PostMan utility). When a 
+  constant string is to be set from harbour into the mod, we need to create a copy of it using the
+  memory API of the mod.
+  
+2019/June/14
+
+* New samples/apps/honey developed by Carles Aubia, its a great example using MVC (model-view-controller)
+  with mod_harbour. Don't miss to review it.
+
+2019/June/13
+
+* New function ReplaceBlocks( cCode ) searches for {{ ... }} and if found, it macroexpands its containt
+  before calling the harbour preprocessor. apache.prg sets an environment variable PRGPATH that you can
+  use before compiling your PRGs, in example: #include '{{hb_GetEnv("PRGPATH")}}/a2.prg' This way we can 
+  use relative paths in the includes.
+
+2019/June/12
+
+* Enhancement: command ? only calls AP_RPuts() once
+
+* We have started a how-to guide (readme.md) for mod_harbour on OSX
+
+* mod_harbour.c can also be compiled using MinGW gcc 32 bits from Windows 32
+  ( we advise not to use gcc for Windows as it uses many DLLs)
+  
+* New samples: setcookie.prg and getcookie.prg thanks to Carles Aubia!  
+
+
+2019/June/11
+
+* We start this ChangeLog.txt to comment all changes
+
+* AP_RPuts() was sending a <br>, now the <br> is issued by the ? command
+
+* In order to implement AP_Body() the call to ap_parse_form_data() had to be removed as it was emptying the body
+  after the call. AP_Body() also empties the body after reading it, so in order to keep its value, from apache.prg
+  we keep a low level static char * szBody to keep a copy of it. Next calls to AP_Body() returns this copy
+  
+* A new function AP_PostPairs() in PRG level replaces the previous low level AP_PostPairs(). This new function can
+  be tested from samples/post.prg that makes a call to samples/postpairs.prg
+  
+* Fix: After the new function AP_PostPairs(), the text that we receive (i.e. from samples/run.prg) is url-encoded.
+  So we have implemented a new function hb_UrlDecode() to do the right transformation. hb_UrlDecode() is renamed
+  Giancarlo Nicolai's Tip_UrlDecode()
+  
+* In the past days:
+  + we unified the source code for both Linux and Windows
+  + We are able to include contribs libs in libharbour.(dll or so) or to include your own libs

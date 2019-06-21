@@ -1,9 +1,11 @@
 function Main()
 
-   local n
-   
-   for n = 0 to AP_PostPairsCount() - 1
-      ? AP_PostPairsKey( n ) + " = " + AP_PostPairsVal( n )
-   next
-   
+   local hPairs := AP_PostPairs()
+
+   if Len( hPairs ) == 0
+      ? "This example is used from samples/post.prg"
+   else
+      ? ValToChar( hPairs )
+   endif
+
 return nil

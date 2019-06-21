@@ -10,7 +10,7 @@ Copy mod_harbour.so to /usr/lib/apache2/modules
 In /etc/apache2/apache2.conf add these lines:
 ```
 LoadModule harbour_module /usr/lib/apache2/modules/mod_harbour.so
-<FilesMatch "\.(prg)$">
+<FilesMatch "\.(prg|hrb)$">
     SetHandler harbour
 </FilesMatch>
 ```
@@ -24,13 +24,22 @@ Copy samples/test.prg to /var/www/html and go to localhost/test.prg in your brow
 
 The mod_harbour for Apache on Linux uses a different approach that turns it much much faster and lighter.
 
+This is the required structure of folders to create mod_harbour:
+```
+ + /home/username
+   + mod_harbour
+   + harbour_for_modharbour
+   + temp
+      + harbour  (created using apxs -g -n harbour from temp folder)
+```
+
 **0. Changes to build Harbour:**
 
 In both **config/dyn.mk** and **config/lib.mk** HB_DYN_LIBS add hbcplr \
 
 In **src/Makefile** DYNDIRLIST_BASE add src/compiler \
 
-In **src/harbour.def** add HB_FUN_COMPILEFROMBUF
+In **src/harbour.def** add HB_FUN_HB_COMPILEFROMBUF
 
 Copy **apache.prg** to src/rtl and modify Makefile to add it in PRG_SOURCES section
 
