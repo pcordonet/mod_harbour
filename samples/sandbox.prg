@@ -17,7 +17,7 @@ Static hIni         := ""
 
 function Main( cFile )
 
-   local cDateBuild := "Jun 18 2019 11:06:00"
+   local cDateBuild := "Jun 19 2019 14:16:00"
    local cTabFile   := "NONAME1.PRG"
    local cToolTab   := AP_GetEnv( "DOCUMENT_ROOT" ) + "\modharbour_samples\" 
    local oEditor
@@ -54,7 +54,6 @@ function Main( cFile )
 
    TEMPLATE USING oEditor PARAMS cText, cTabFile, cToolTab, cIni, cDateBuild
    <html lang="en">
-   <html>
    <head>
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, shrink-to-fit=no">
@@ -63,11 +62,16 @@ function Main( cFile )
       <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
       <script src="https://fivetechsoft.github.io/xcloud/source/js/xcloud.js"></script>
       <link rel="stylesheet" href="https://fivetechsoft.github.io/xcloud/source/css/xcloud.css"> 
-      <title>XCloud V.1.1</title>
+      <title>XCloud V.1.2</title>
       <meta name="author" content="Cristobal Navarro">
 
    <style>
-   .container-fluid {
+
+   div { 
+     display: block;
+   }
+
+   .container.fluid {
       color:#2C2828;
       background-color:Ivory;
       position: absolute;
@@ -82,7 +86,7 @@ function Main( cFile )
       top: 0;
       right: 0;
       bottom: 0;
-      left: 15;
+      left: 0;
       padding-top: 0px;
       padding-left: 0px;
       padding-right: 0px;
@@ -107,26 +111,28 @@ function Main( cFile )
       padding-left: 4px; 
       padding-right: 4px;
       color: #2C2828;
-      background-color: #ffff;
+      background-color: #FFFFFF;
    }
 
    .btn {
-      color:white;
-      background-color:#002240;
+      padding-top: 6px; 
+      color:#002240;
+      background-color: #CFD6E4;
+      border-radius: 4px;
    }
 
    .btn:hover {
       color: #002240;
-      background-color: #FFFF;
+      background-color: #FFFFFF;
    }
 
    .btn:focus {
       color: #2C2828;
-      background-color: #FFFF;
+      background-color: #FFFFFF;
    }
 
    .vsplitbar {
-   	width: 4px;
+   	width: 3px;
    	background: #92A8D1;
    }
 
@@ -137,6 +143,7 @@ function Main( cFile )
 
    .nav-tabs > li {
       margin-left:0px;
+      padding-left:0px; 
       position:relative;
       font-size: 14px;
       font-family: "Segoe UI Symbol";
@@ -184,75 +191,139 @@ function Main( cFile )
       color: #ffff; 
       opacity: 1;
    }
+
+   .modal {
+      position: absolute;
+      top: 56px;
+      left: 50%;
+      right: 0;
+      bottom: 0;
+      z-index: 10040;
+      overflow: auto;
+      overflow-y: auto;
+   }
+
+   .modal-content {
+   	color: #002240;
+      background-color:white;
+   }
+
    </style>
    </head>
 
    <body>
-      <nav class="navbar navbar-inverse" style="border:0px;height:7.5%;">
-         <div class="container-fluid"
-            style="background-color:#92A8D1;border:0px;height:100%;">
+      <nav class="navbar navbar-inverse navbar-static-top" style="left:1px;width:99.8%;border:0px;">
+
             <div class="navbar-header">
                <a class="navbar-brand" href="https://fivetechsoft.github.io/mod_harbour/"
-                  style="color:#002240;padding-top:4px;padding-left:20px;padding-right:14px;padding-bottom:4px;">
+                  style="color:white;padding-top:4px;padding-left:1px;padding-right:12px;padding-bottom:4px;">
                   <span class="glyphicon glyphicon-menu-hamburger" height="46" aria-hidden="true"></span>
-                  <b>xcloud v.1.1</b><p><h5><b>Ide for mod_harbour</b></h5></p></a>
+                  <b>xcloud v.1.2</b><h5>Ide for mod_harbour</h5></a>
             </div>
-            <div class="nav navbar-nav">
-               <div class="col-sm-1">
-               <input type="file" directory class="btn navbar-btn btn-md btn-sm" name="SelectFile" id="selectfile"
-                  accept=".prg,.ch,.h,.c,.cpp,.view,.html,.htm,.php*,.tpl,.js,.css"
-                  onchange="openFile(event)"><br>
-               </div>
-               <a class="navbar-brand" href="#"></a>
-               <ul class="nav navbar-nav navbar-right">
-                  <li><button class="btn navbar-btn btn-sm" onclick="editor_run()" title="[ F9 ]"><span class="glyphicon glyphicon-flash"></span> Run</button></li>
-                  <li><button class="btn navbar-btn btn-sm" onclick="Download()" title="[ Ctrl + S ]">
+            <div class="navbar-collapse collapse" style="border:0px;">
+               <ul class="nav navbar-nav">
+                  <li><input type="file" directory class="btn navbar-btn" name="SelectFile" id="selectfile"
+                     accept=".prg,.ch,.h,.c,.cpp,.view,.html,.htm,.php*,.tpl,.js,.css"
+                     onchange="openFile(event)"></li>
+                  <a class="navbar-brand" href="#"></a>
+                  <li><button class="btn navbar-btn" onclick="$('#openfiledlg').modal()" title="[      ]"><span class="glyphicon glyphicon-open"></span> Open</button></li>
+                  <a class="navbar-brand" href="#"></a>
+                  <li><button class="btn navbar-btn" onclick="editor_run()" title="[ F9 ]"><span class="glyphicon glyphicon-flash"></span> Run</button></li>
+                  <a class="navbar-brand" href="#"></a>
+                  <li><button class="btn navbar-btn" onclick="Download()" title="[ Ctrl + S ]">
                       <span class="glyphicon glyphicon-cloud-download"></span> Save</button></li>
-                  <li><button class="btn navbar-btn btn-sm"  onclick="$('#saveas').modal()" title="[ Ctrl + Q ]">
+                  <li><button class="btn navbar-btn"  onclick="$('#saveas').modal()" title="[ Ctrl + Q ]">
                       <span class="glyphicon glyphicon-save"></span> Save As</button></li>
                   <a class="navbar-brand" href="#"></a>
-                  <li><button class="btn navbar-btn btn-md btn-sm" onclick="Clear()" title="[ F5 ]"><span class="glyphicon glyphicon-edit"></span> Clear All</button></li>
-                  <li><button class="btn navbar-btn btn-md btn-sm" onclick="Clear( true )" title="[ F7 ]"><span class="glyphicon glyphicon-inbox"></span> Clear Result</button></li>
+                  <li><button class="btn navbar-btn" onclick="Clear()" title="[ F5 ]"><span class="glyphicon glyphicon-edit"></span> Clear All</button></li>
+                  <li><button class="btn navbar-btn" onclick="Clear( true )" title="[ F7 ]"><span class="glyphicon glyphicon-inbox"></span> Clear Result</button></li>
                   <a class="navbar-brand" href="#"></a>
-                  <li><button class="btn navbar-btn btn-md btn-sm" onclick="$('#gotoline').modal()" title="[ F6 ]"><span class="glyphicon glyphicon-edit"></span> Go to</button></li>
-                  <a class="navbar-brand" href="#"></a>
-                  <li><button class="btn navbar-btn btn-md btn-sm" onclick="editor.undo()" title="[ Ctrl + Z ]"><span class="glyphicon glyphicon-repeat"></span> Undo</button></li>
-                  <li><button class="btn navbar-btn btn-md btn-sm" onclick="editor.redo()" title="[ Ctrl + A ]"><span class="glyphicon glyphicon-refresh"></span> Redo</button></li>
-                  <a class="navbar-brand" href="#"></a>
-                  <li><button class="btn navbar-btn btn-md btn-sm" 
-                       onclick='editor.execCommand("showSettingsMenu")' title="[ CTRL + , ]">
-                       <span class="glyphicon glyphicon glyphicon-cog"></span> Setup</button></li>
-                  <li><button class="btn navbar-btn btn-sm" 
-                       onclick='editor.execCommand("showKeyboardShortcuts")' title="[ CTRL + ALT + H ]">
-                       <span class="glyphicon glyphicon-question-sign"></span> Help</button></li>
-                  <li><button class="btn navbar-btn btn-sm" onclick="$('#about').modal()">
-                       <span class="glyphicon glyphicon-info-sign"></span> About</button></li>
-                  <a class="navbar-brand" href="#"></a>
-                  <li><button class="btn navbar-btn btn-md btn-sm" onclick="openfileconfig()" title="[      +   ]"><span class="glyphicon glyphicon-exclamation-sign"></span> Config</button></li>
+                  <li><button class="btn navbar-btn" onclick="$('#gotoline').modal()" title="[ F6 ]"><span class="glyphicon glyphicon-edit"></span> Go to</button></li>
                </ul>
             </div>
-         </div>
+
       </nav>
-      <ul class="nav nav-tabs" id="tabs" role="tablist" style="background-color:Ivory;">
-         <li class="active" id="tab1"><a data-toggle="tab" href="#row1" role="tab" title="<?prg return cToolTab ?>">
-            <?prg return cTabFile ?></a><span>x</span></li>
-      </ul>
-      <div class="tab-content" style="background-color:Ivory;width:100%;height:88.0%;">
-         <div class="row" id="row1" style="background-color:Ivory;width:100%;height:100%;">
-            <div class="col-sm-7" style="background-color:Ivory;width:100%;height:100%;">
-               <div id="editor" style="height:100%;"><?prg return cText ?></div>
-            </div>
-            <div class="col-sm" id="result"
-               style="border:0.5px solid;border-color:#92A8D1;background-color:Ivory;height:100%;padding-left:5px;">
+      <div class="container" style="border:0px;width:99.8%;">
+         <ul class="nav nav-tabs" id="tabs" role="tablist" style="background-color:Ivory;">
+            <li class="active" id="tab1"><a data-toggle="tab" href="#row1" role="tab" title="<?prg return cToolTab ?>">
+               <?prg return cTabFile ?></a><span>x</span></li>
+         </ul>
+         <div class="tab-content" style="background-color:Ivory;height:82.0%;">
+            <div class="row" id="row1" style="background-color:Ivory;height:99.9%;">
+               <div class="col-sm-7" style="background-color:Ivory;height:100%;">
+                  <div id="editor" style="height:100%;"><?prg return cText ?></div>
+               </div>
+               <div class="col-sm" id="result" scrolling="auto"
+                  style="border:0.5px solid;border-color:#92A8D1;
+                         background-color:Ivory;height:100%;
+                         padding-left:5px;padding-right:0px;
+                         overflow-y: scroll;overflow-x: scroll;">
+               </div>
             </div>
          </div>
+      </div>
+      <nav class="navbar navbar-inverse navbar-static-bottom" style="left:1px;width:99.8%;border:0px;">
+
+         <div class="navbar-footer" style="border:0px;width:100%;" >
+            <ul class="nav navbar-nav" style="border:0px;">
+                  <li><button class="btn navbar-btn" onclick="editor.undo()" title="[ Ctrl + Z ]"><span class="glyphicon glyphicon-repeat"></span> Undo</button></li>
+                  <li><button class="btn navbar-btn" onclick="editor.redo()" title="[ Ctrl + A ]"><span class="glyphicon glyphicon-refresh"></span> Redo</button></li>
+                  <a class="navbar-brand" href="#"></a>
+                  <li><button class="btn navbar-btn" 
+                       onclick='editor.execCommand("showSettingsMenu")' title="[ CTRL + , ]">
+                       <span class="glyphicon glyphicon glyphicon-cog"></span> Setup</button></li>
+                  <li><button class="btn navbar-btn" 
+                       onclick='editor.execCommand("showKeyboardShortcuts")' title="[ CTRL + ALT + H ]">
+                       <span class="glyphicon glyphicon-question-sign"></span> Help</button></li>
+                  <li><button class="btn navbar-btn" onclick="$('#about').modal()">
+                       <span class="glyphicon glyphicon-info-sign"></span> About</button></li>
+                  <a class="navbar-brand" href="#"></a>
+                  <li><button class="btn navbar-btn" onclick="openfileconfig()" title="[      +   ]"><span class="glyphicon glyphicon-exclamation-sign"></span> Config</button></li>
+                  <a class="navbar-brand" href="#"></a>
+                  <li><button class="btn navbar-btn" onclick="OpenInNewTabWinBrowser(ctab)" title="[      ]"><span class="glyphicon glyphicon-open"></span> Run Extern</button></li>
+                  <a class="navbar-brand" href="#"></a>
+                  <li><button class="btn navbar-btn" onclick="InnerInNewTabWinBrowser(ctab)" title="[      ]"><span class="glyphicon glyphicon-open"></span> Run InnerHtml</button></li>
+            </ul>
+         </div>
+
+      </nav>
+
+      <div class="modal" id="openfiledlg" role="dialog">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal" style="color:black;">&times;</button>
+              <h4 class="modal-title">Open File ( Not Use YET please )</h4>
+            </div>
+            <div class="modal-body" style="padding:40px 50px;">
+              <form role="form">
+                <div class="form-group">
+                  <label for="fileopen"><span class="glyphicon glyphicon-open-file"></span> Name File</label>
+                  <input type="file" class="btn navbar-btn" id="FileUpload" onchange="selectFolder(event)" 
+                     webkitdirectory mozdirectory msdirectory odirectory directory multiple>
+                  <input type="text" class="form-control" id="fileopen" placeholder="Select file">
+                </div>
+                <button class="btn btn-success btn-block" data-dismiss="modal" onclick="SaveFileAs()">
+                   <span class="glyphicon glyphicon-saved"></span> Open local File</button>
+              </form>
+              <form role="form">
+                <div class="form-group">
+                  <label for="fileopenurl"><span class="glyphicon glyphicon-cloud-download"></span> URL File</label>
+                  <input type="text" class="form-control" id="fileopenurl" placeholder="Write Url file">
+                </div>
+                <button class="btn btn-success btn-block" data-dismiss="modal" onclick="SaveFileAs()">
+                   <span class="glyphicon glyphicon-saved"></span> Open File from URL</button>
+              </form>
+            </div>
+          </div>
+        </div>
       </div>
 
       <div class="modal fade" id="gotoline" role="dialog">
         <div class="modal-dialog modal-sm" role="document">
           <div class="modal-content">
             <div class="modal-header">
-              <button type="button" class="close" data-dismiss="modal">&times;</button>
+              <button type="button" class="close" data-dismiss="modal" style="color:black;">&times;</button>
               <h4 class="modal-title">Goto Line / Column:</h4>
             </div>
             <div class="modal-body" style="padding:40px 50px;">
@@ -277,7 +348,7 @@ function Main( cFile )
         <div class="modal-dialog">
           <div class="modal-content">
             <div class="modal-header">
-              <button type="button" class="close" data-dismiss="modal">&times;</button>
+              <button type="button" class="close" data-dismiss="modal" style="color:black;">&times;</button>
               <h4 class="modal-title">Save As:</h4>
             </div>
             <div class="modal-body" style="padding:40px 50px;">
@@ -299,7 +370,7 @@ function Main( cFile )
           <div class="modal-content">
             <div class="modal-header" style="color:#2C2828;background-color:silver;padding:4px 4px;">
               <button type="button" class="close" data-dismiss="modal" style="color:white;padding:4px 4px;">&times;</button>
-              <h4 class="modal-title"><b>xcloud v.1.1 - Ide & Editor for mod_harbour</b> [ <?prg return cDateBuild ?> ]</h4>
+              <h4 class="modal-title"><b>xcloud v.1.2 - Ide & Editor for mod_harbour</b> [ <?prg return cDateBuild ?> ]</h4>
             </div>
             <div class="modal-body" style="color:#2C2828;background-color:white;padding:4px 20px 4px;">
               <h6>
@@ -501,7 +572,6 @@ function Main( cFile )
              name: 'Run',
              bindKey: {win: 'F9',  mac: 'F9'},
              exec: function(editor) {
-                //Run();
                 editor_run();
                 },
               readOnly: true // false if this command should not apply in readOnly mode
@@ -528,6 +598,56 @@ function Main( cFile )
                textos[ ctab.toUpperCase() ] = editor.getValue();
             }
           } );
+          //editor.session.editor.on("blur", function( e ) {
+          //
+          //} );
+          //editor.on( "focus", function( e ) {
+          //   console.log( "has focus" );
+          //   console.log( ctab.trim().toUpperCase() );
+          //} );
+
+          //editor.on( "blur", function( e ) {
+          //   console.log( "lost focus" );
+          //} );
+
+         function OpenInNewTabWinBrowser(url) {
+            var win = window.open(url, '_blank');
+            //win.addEventListener( 'close', (event) => {
+            //   editor.focus();
+            //});
+            win.focus();
+         }
+
+         function InnerInNewTabWinBrowser(url) {
+            var win = window.open();
+            win.document.body.innerHTML = editor.getValue();
+            win.focus();
+         }
+
+         function selectFolder( e ) {
+             var theFiles = e.target.files;
+             var relativePath = theFiles[0].webkitRelativePath;
+             //alert( relativePath );
+             var folder = relativePath.split("/");
+             //for (var i=0; i < folder.length; i++) {
+             for (var i=0; i < theFiles.length; i++) {
+                //alert(folder[i]);
+                console.log( theFiles[i] );
+                console.log( theFiles[i].webkitRelativePath );
+                if ( theFiles[i].type )
+                  {
+                     var elem = document.createElement( theFiles[i].type );
+                  }
+                else
+                  {
+                     var elem = document.createElement("text");
+                  }
+                //elem.src = window.URL.createObjectURL( theFiles[i] );
+                //console.log( elem );
+                //console.log( elem.src );
+                }
+                console.log( "<?prg return Curdir() ?>" );
+             }
 
          function Search() {
             editor.find( "o", {
@@ -593,7 +713,6 @@ function Main( cFile )
          function Clear( onlyresult ) {
             var text = '';
             editor.setValue( text,1 );
-            //Run();
             editor_run();
             selectfile.value = '';
             //$(".nav-tabs li").children('a').last().focus();
@@ -621,7 +740,6 @@ function Main( cFile )
          function openFile(event) {
             var text = '';
             editor.setValue( text );
-            //Run();
             editor_run();
             var input = event.target;
             var reader = new FileReader();
@@ -798,7 +916,6 @@ function Main( cFile )
                  ctab = $(this).text().toUpperCase();
                  $(this).text( ctab.trim().toUpperCase() );
                  editor.setValue('',1);
-                 //Run();
                  editor_run();
                  editor.setValue( textos[ ctab.trim().toUpperCase() ], -1 );
                  var mode = autoImplementedMode( ctab.trim().toLowerCase() );
@@ -820,14 +937,12 @@ function Main( cFile )
                  //$(anchor.attr('href')).remove();
                  $(this).parent().remove();
                  ctab = $('#tabs a:last').text().toUpperCase();
-                 //Run();
                  editor_run();
                  editor.setValue( textos[ ctab.trim().toUpperCase() ], -1 );
                 }
               else {
                  ctab = "NONAME1.PRG";
                  $('#tabs a:last').text( ctab );
-                 //Run();
                  editor_run();
                  textos[ ctab.trim().toUpperCase() ] = editor.getValue();
                 }
@@ -1131,11 +1246,13 @@ Function GetTextInitial()
 
    TEXT TO VAR cTextIni
 function Main()
+
    ? "<h1>" + "Hello world" + "</h1>"
+
 return nil
    ENDTEXT
 
-return cTextIni
+return Left( cTextIni, Len( cTextIni ) - 1 )
 
 //----------------------------------------------------------------------------//
 
@@ -1170,8 +1287,8 @@ return hIni
 
 Function GetKeyIni( cSect, cKey )
 
-   local uVal   := ""
-   hb_defaultValue( cSect, "EDITOR" )    // At moment not used
+   local uVal := ""
+   cSect := hb_defaultValue( cSect, "EDITOR" )    // At moment not used
    if !Empty( hIni ) .and. !Empty( cKey )
       if hb_hHaskey( hIni, cKey )
          uVal   := hIni[ cKey ]
@@ -1263,7 +1380,7 @@ Function ConfigRead( cFileIni )
       cText    += "hScrollBarAlwaysVisible=false" + CRLF
       cText    += "vScrollBarAlwaysVisible=false" + CRLF
       cText    += "fontSize=16" + CRLF
-      cText    += "fontFamily='Liberation Mono'" + CRLF
+      cText    += "fontFamily='Consolas'" + CRLF
       cText    += "maxLines=undefined" + CRLF
       cText    += "minLines=undefined" + CRLF
       cText    += "maxPixelHeight=0" + CRLF

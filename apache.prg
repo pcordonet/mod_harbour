@@ -9,6 +9,7 @@ extern AP_HEADERSINCOUNT, AP_HEADERSINKEY, AP_HEADERSINVAL
 extern AP_POSTPAIRSCOUNT, AP_POSTPAIRSKEY, AP_POSTPAIRSVAL, AP_POSTPAIRS
 extern AP_HEADERSOUTCOUNT, AP_HEADERSOUTSET, AP_HEADERSIN, AP_SETCONTENTTYPE
 extern HB_VMPROCESSSYMBOLS, HB_VMEXECUTE, AP_GETENV, AP_BODY, HB_URLDECODE
+extern SHOWCONSOLE
 
 static hPP
 
@@ -43,6 +44,11 @@ function AddPPRules()
 
    if hPP == nil
       hPP = __pp_init()
+      __pp_path( hPP, "~/harbour/include" )
+      __pp_path( hPP, "c:\harbour\include" )
+      if ! Empty( hb_GetEnv( "HB_INCLUDE" ) )
+         __pp_path( hPP, hb_GetEnv( "HB_INCLUDE" ) )
+      endif 	 
    endif
 
    __pp_addRule( hPP, "#xcommand ? [<explist,...>] => AP_RPuts( '<br>' [,<explist>] )" )
@@ -70,7 +76,7 @@ function Execute( cCode, ... )
    end
 
    oHrb = HB_CompileFromBuf( cCode, .T., "-n", "-I" + cHBheaders1, "-I" + cHBheaders2,;
-                             "-I" + hb_GetEnv( "HB_INCLUDE" ) )
+                             "-I" + hb_GetEnv( "HB_INCLUDE" ), hb_GetEnv( "HB_USER_PRGFLAGS" ) )
    if ! Empty( oHrb )
       uRet = hb_HrbDo( hb_HrbLoad( oHrb ), ... )
    endif
@@ -228,10 +234,54 @@ function ReplaceBlocks( cCode, cStartBlock, cEndBlock )
       cBlock = SubStr( cCode, nStart + Len( cStartBlock ), nEnd - nStart - Len( cEndBlock ) )
       cCode = SubStr( cCode, 1, nStart - 1 ) + ValToChar( &( cBlock ) ) + ;
       SubStr( cCode, nEnd + Len( cEndBlock ) )
-		lReplaced := .T.
+		  lReplaced = .T.
    end
    
-return lReplaced
+return If( HB_PIsByRef( 1 ), lReplaced, cCode )
+
+//----------------------------------------------------------------//
+
+function PathUrl()
+
+   local cPath := AP_GetEnv( 'SCRIPT_NAME' )   
+   local n     := RAt( '/', cPath )
+        
+return Substr( cPath, 1, n - 1 )
+
+//----------------------------------------------------------------//
+
+function PathBase( cDirFile )
+
+   local cPath := hb_GetEnv( "PRGPATH" ) 
+    
+   hb_default( @cDirFile, '' )
+    
+   cPath += cDirFile
+    
+   if "Linux" $ OS()    
+      cPath = StrTran( cPath, '\', '/' )     
+   endif
+   
+return cPath
+
+//----------------------------------------------------------------//
+
+function Include( cFile )
+
+   local cPath := AP_GetEnv( "DOCUMENT_ROOT" ) 
+
+   hb_default( @cFile, '' )
+   cFile = cPath + cFile   
+   
+   if "Linux" $ OS()
+      cFile = StrTran( cFile, '\', '/' )     
+   endif   
+    
+   if File( cFile )
+      return MemoRead( cFile )
+   endif
+   
+return ""
 
 //----------------------------------------------------------------//
 
@@ -248,6 +298,23 @@ static void * pHeadersInCount, * pHeadersInKey, * pHeadersInVal;
 static void * pPostPairsCount, * pPostPairsKey, * pPostPairsVal;
 static void * pAPGetenv, * pAPBody;
 static const char * szFileName, * szArgs, * szMethod, * szUserIP;
+
+#ifdef _MSC_VER
+   #include <windows.h>
+
+HB_FUNC( SHOWCONSOLE )     // to use the debugger locally on Windows
+{
+   ShowWindow( GetConsoleWindow(),  3 );
+   ShowWindow( GetConsoleWindow(), 10 );
+}
+
+#else
+
+HB_FUNC( SHOWCONSOLE )
+{
+}
+
+#endif
 
 HB_EXPORT_ATTR int hb_apache( void * _pRequestRec, void * _pAPRPuts, 
                const char * _szFileName, const char * _szArgs, const char * _szMethod, const char * _szUserIP,

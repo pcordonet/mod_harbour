@@ -1,3 +1,4 @@
+sudo apt-get install apache2-dev
 cd ~
 if [ ! -d "mod_harbour" ]; then
    git clone https://github.com/fivetechsoft/mod_harbour
@@ -21,10 +22,10 @@ if [ ! -d "harbour" ]; then
    apxs -g -n harbour
 fi   
 cd harbour
-ln -sf ~/mod_harbour/linux/mod_harbour.c mod_harbour.c
+ln -sf ~/mod_harbour/mod_harbour.c mod_harbour.c
 make all
 cd ~/harbour_for_modharbour/src/rtl
-ln -sf ~/mod_harbour/linux/apache.prg apache.prg  
+ln -sf ~/mod_harbour/apache.prg apache.prg  
 cd ~/harbour_for_modharbour
 export HB_USER_PRGFLAGS=-l-
 export HB_BUILD_CONTRIBS=no
